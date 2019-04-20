@@ -61,7 +61,7 @@ $(document).ready(function() {
     if (debug) console.log('QueryURL', queryURL);
 
     // Data fetcher
-    $.get(queryURL, data => buildGiphy(data));
+    $.ajax({ url: queryURL, success: data => buildGiphy(data) });
 
     document.title = `Searching for ${query}`;
   }
