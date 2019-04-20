@@ -1,55 +1,76 @@
-.wrapper {
-  background: url(../images/bg.jpeg) no-repeat center center fixed;
-  background-size: cover;
+@import url('https://fonts.googleapis.com/css?family=Fredericka+the+Great');
+
+html,
+body {
+  font-family: 'Fredericka the Great', Arial, Helvetica, sans-serif;
+  font-size: 12pt;
+  color: black;
   margin: 0;
   padding: 0;
+  height: 100vh;
+}
+
+body {
+  background: url('https://res.cloudinary.com/jenn-dev/image/upload/w_auto,f_auto/v1555715928/bg_hvvvxh.png')
+    no-repeat center center fixed;
+  background-size: cover;
+  background-color: rgba(255, 255, 255, 0.4);
+  background-blend-mode: lighten;
+}
+
+h4 {
+  line-height: 2rem;
+  margin: 0;
+}
+
+p {
+  margin: 1rem auto;
+  background: #a94442;
+  width: 200px;
+  color: white;
+}
+
+button {
+  background: #fdca4a;
+  color: white;
+  padding: 1rem;
+  margin: 0.5rem;
+  font-size: 18pt;
+}
+
+button:hover {
+  color: white;
+  background: #ff1918;
+}
+
+form {
+  margin: 0 auto;
+  text-align: center;
+}
+
+form > input {
+  border: 0;
+  padding: 0.8rem;
+  margin: 0 0.5rem;
+}
+
+form > button {
+  font-size: 12pt;
+  padding: 0.8rem 1rem;
 }
 
 .header {
   text-align: center;
-  padding-top: 10px;
-  padding-bottom: 15px;
-  font-family: 'Carrois Gothic SC', sans-serif;
-  color: #c6ced1;
 }
 
-#topImageL {
-  width: 15%;
-  float: left;
-  margin-left: 20px;
-}
-
-#topImageR {
-  width: 15%;
-  float: right;
-  margin-right: 20px;
-}
-
-label {
-  font-size: 18px;
-  color: #c6ced1;
-}
-
-#show {
-  margin-right: 5px;
-  margin-left: 5px;
-  margin-top: 5px;
-  margin-bottom: 5px;
-}
-
-#pixarSearch {
-  margin: 0 auto;
+.movies {
+  margin: 1.5rem auto;
   text-align: center;
-  font-family: 'Carrois Gothic SC', sans-serif;
 }
 
-#gifArea {
-  clear: both;
-  display: inline;
+.gifArea {
+  display: flex;
   flex-wrap: wrap;
-}
-
-.pixarGiphy {
-  padding: 2px;
-  width: 80%;
+  text-align: center;
+  padding: 1rem;
 }

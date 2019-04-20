@@ -1,75 +1,90 @@
+const debug = false;
+
 $(document).ready(function() {
-  // Array for searched topics to be added
-  const topics = [];
+  const ApiKey = 'EGbVEEahGpJcHd3KjMIMGPxom0aD59Py';
+  const Rating = 'pg';
 
-  // Function with AJAX call to GIPHY; Q parameterc for API link set to search term, limit 10 results
-  // Create div with respective still and animate image sources with "data-state", "data-still" and "data-animate" attributes
-  function displayPixar() {
-    const x = $(this).data('search');
-    console.log(x);
-
-    const queryURL = `https://api.giphy.com/v1/gifs/search?q=${x}&api_key=EGbVEEahGpJcHd3KjMIMGPxom0aD59Py`;
-
-    console.log(queryURL);
-
-    $.ajax({
-      url: queryURL,
-      method: 'GET',
-    }).done(function(response) {
-      const results = response.data;
-      console.log(results);
-      for (let i = 0; i < results.length; i++) {
-        const showDiv = $("<div class='col-md-4'>");
-
-        const { rating } = results[i];
-        const defaultAnimatedSrc = results[i].images.fixed_height.url;
-        const staticSrc = results[i].images.fixed_height_still.url;
-        const showImage = $('<img>');
-        const p = $('<p>').text(`Rating: ${rating}`);
-
-        showImage.attr('src', staticSrc);
-        showImage.addClass('pixarGiphy');
-        showImage.attr('data-state', 'still');
-        showImage.attr('data-still', staticSrc);
-        showImage.attr('data-animate', defaultAnimatedSrc);
-        showDiv.append(p);
-        showDiv.append(showImage);
-        $('#gifArea').prepend(showDiv);
-      }
-    });
+  function titleCase(str) {
+    return str
+      .trim()
+      .toLowerCase()
+      .split(' ')
+      .map(function(word) {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      })
+      .join(' ');
   }
 
-  // Submit button click event takes search term from form input, trims and pushes to topics array, displays button
-  $('#addShow').on('click', function(event) {
-    event.preventDefault();
-    const newShow = $('#pixarInput')
-      .val()
-      .trim();
-    topics.push(newShow);
-    console.log(topics);
-    $('#pixarInput').val('');
-    displayButtons();
-  });
+  const buildGiphy = response => {
+    const results = response.data;
+    if (debug) console.log('results', results);
+
+    const gifs = results.map(result => {
+      const { rating, images } = result;
+      const { fixed_width, fixed_width_still } = images;
+
+      const showDiv = $("<div class='col-sm-4'>");
+
+      const p = $('<p>')
+        .text(`Rating: ${rating.toUpperCase()}`)
+        .hide();
+      const defaultAnimatedSrc = fixed_width.url;
+      const staticSrc = fixed_width_still.url;
+      const showImage = $('<img>')
+        .attr('src', staticSrc)
+        .attr('class', 'pixarGiphy')
+        .attr('data-state', 'still')
+        .attr('data-still', staticSrc)
+        .attr('data-animate', defaultAnimatedSrc);
+
+      showDiv.append(p).append(showImage);
+
+      return $('.gifArea')
+        .prepend(showDiv)
+        .hide();
+    });
+    // Wait for all requests, and then setState
+    Promise.all(gifs).then(() => {
+      $('.gifArea')
+        .fadeIn(1000)
+        .slideDown(600, function() {
+          $('p').slideDown(400);
+        });
+    });
+  };
+
+  // Create div with respective still and animate image sources with "data-state", "data-still" and "data-animate" attributes
+  function displayPixar(query) {
+    const queryURL = `https://api.giphy.com/v1/gifs/search?q=${query}&rating=${Rating}&api_key=${ApiKey}`;
+
+    if (debug) console.log('Query', query);
+    if (debug) console.log('QueryURL', queryURL);
+
+    // Data fetcher
+    $.get(queryURL, data => buildGiphy(data));
+
+    document.title = `Searching for ${query}`;
+  }
 
   // Function iterates through topics array to display button with array values in "myButtons" section of HTML
-  function displayButtons() {
-    $('#myButtons').empty();
-    for (let i = 0; i < topics.length; i++) {
-      const a = $('<button class="btn btn-primary">');
-      a.attr('id', 'show');
-      a.attr('data-search', topics[i]);
-      a.text(topics[i]);
-      $('#myButtons').append(a);
+  const displayButtons = data => {
+    if (data) {
+      const a = $('<button class="button">')
+        .attr('id', 'show')
+        .attr('data-search', data)
+        .text(data);
+      return $('.movies').append(a);
     }
-  }
+  };
 
-  displayButtons();
-
-  // Click event on button with id of "show" executes displayNetflixShow function
-  $(document).on('click', '#show', displayPixar);
-
-  // Click event on gifs with class of "netflixGiphy" executes pausePlayGifs function
-  $(document).on('click', '.pixarGiphy', pausePlayGifs);
+  // Submit button click event takes search term from form input, trims and pushes to topics array, displays button
+  $('#addMovie').on('click', event => {
+    event.preventDefault();
+    const newShow = $('#pixarInput').val();
+    $('#pixarInput').val('');
+    displayButtons(newShow);
+    displayPixar(titleCase(newShow));
+  });
 
   // Function accesses "data-state" attribute and depending on status, changes image source to "data-animate" or "data-still"
   function pausePlayGifs() {
@@ -82,4 +97,11 @@ $(document).ready(function() {
       $(this).attr('data-state', 'still');
     }
   }
+  // Click event on button with id of "show" executes displayPixar function
+  $(document).on('click', '#show', query =>
+    displayPixar(query.target.innerText)
+  );
+
+  // Click event on gifs with class of "pixarGiphy" executes pausePlayGifs function
+  $(document).on('click', '.pixarGiphy', pausePlayGifs);
 });
