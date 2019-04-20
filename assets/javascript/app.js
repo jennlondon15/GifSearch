@@ -82,7 +82,7 @@ $(document).ready(function() {
     event.preventDefault();
     const newShow = $('#pixarInput').val();
     $('#pixarInput').val('');
-    displayButtons(newShow);
+    displayButtons(titleCase(newShow));
     displayPixar(titleCase(newShow));
   });
 
